@@ -31,3 +31,9 @@ dat <- integrateWithSCE(res, dds)
 library(vizWithSCE)
 # ...
 ```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
