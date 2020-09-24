@@ -1,0 +1,33 @@
+---
+title: "vizWithSCE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vizWithSCE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+*vizWithSCE* is an R package that allows users to ....
+
+# Run DESeq2 to obtain bulk DE results
+
+```{r}
+library(airway)
+library(DESeq2)
+# ...
+```
+
+# Run `integrateWithSCE`
+
+```{r}
+dat <- integrateWithSCE(res, dds)
+```
+
+# Use *visWithSCE* for visualization 
+
+```{r}
+library(vizWithSCE)
+# ...
+```
