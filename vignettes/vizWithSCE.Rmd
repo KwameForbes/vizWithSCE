@@ -25,7 +25,7 @@ library(DESeq2)
 dat <- integrateWithSCE(res, dds)
 ```
 
-# Use *visWithSCE* for visualization 
+# Use *vizWithSCE* for visualization 
 
 ```{r}
 library(vizWithSCE)
