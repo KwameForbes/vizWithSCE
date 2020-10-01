@@ -81,3 +81,4 @@ integrateWithSingleCell <- function(res, dds) {
   # return the original two objects and the SingleCellExperiment
   return(list(res=res, dds=dds, sce=sce))
 }
+getwd()
