@@ -168,11 +168,12 @@ table(pred$labels, colLabels(sce))
 
 plotScoreHeatmap(pred)
 
-source("/Users/kwameforbes/Documents/R Studio/vizWithSCE/integrate")
+source("R/integrate.R")
 
+dat <- integrateWithSingleCell(res,dds)
 
 plotter <- function(dat) {
-  stopifnot(all(names(dat) == c("res", "dds", "ans")))
+  stopifnot(all(names(dat) == c("res", "dds", "sce")))
   plot(dat$res, dat$dds)
 }
 integrateWithSingleCell(res,dds)

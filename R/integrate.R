@@ -30,8 +30,9 @@ integrateWithSingleCell <- function(res, dds) {
   }
   message(paste("Your dataset appears to be", org))
   # read in table of options from vizWithSCE CSV file
-  csv.file <- system.file("extdata/singleCellTab.csv", package="DESeq2")
-  tab <- read.csv(csv.file)
+  csv.file <- read.csv("R/singleCellTab.csv")
+  #tab <- read.csv("csv.file")
+  tab <- csv.file
   message(paste("Choose a",org,"single-cell dataset to integrate with (0 to cancel)"))
   tab <- tab[tab$org == org,]
   tab2 <- tab[,c("pkg","func","data", "pub","nCells")]
@@ -82,3 +83,4 @@ integrateWithSingleCell <- function(res, dds) {
   return(list(res=res, dds=dds, sce=sce))
 }
 getwd()
+
