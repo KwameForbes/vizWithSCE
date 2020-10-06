@@ -194,7 +194,12 @@ dat <- integrateWithSingleCell(res,dds)
 #' @export
 vizWithSCE <- function(dat) {
   stopifnot(all(names(dat) == c("res", "dds", "sce")))
-  plot(dat$res, dat$dds)
+  ggplot(dat, aes(label,logcounts)) +
+    geom_violin(scale="width") +
+    geom_sina(scale="width", alpha=.5) +
+    ggtitle("Cd52 expression across clusters")
+
+  plotColData(sce, y=I(logcts), x="label")
 }
 integrateWithSingleCell(res,dds)
 getwd()
