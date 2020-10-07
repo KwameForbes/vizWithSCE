@@ -27,5 +27,3 @@ vizWithSCE <- function(dat) {
 
   plotColData(sce, y=I(logcts), x="label")
 }
-integrateWithSingleCell(res,dds)
-getwd()
