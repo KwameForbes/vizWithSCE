@@ -38,9 +38,15 @@ rownames(res) <- sub("\\..*","",rownames(res))
 
 # Run `integrateWithSingleCell`
 
-```{r}
+```{r eval=FALSE}
 source("R/integrate.R")
 dat <- integrateWithSingleCell(res, dds)
+```
+
+```{r results="hide"}
+library(Tenx...)
+pbmc <- pbmc4k()
+dat$sce <- pbmc
 ```
 
 (later we will fix this so that it can be run non-interactively)

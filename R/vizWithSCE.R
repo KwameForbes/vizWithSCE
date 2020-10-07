@@ -20,6 +20,9 @@
 #'
 #' @export
 vizWithSCE <- function(dat, which) {
+
+  browser()
+  
   stopifnot(all(names(dat) == c("res", "dds", "sce")))
 
   ## missing code for taking label and logcounts from sce
