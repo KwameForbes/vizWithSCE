@@ -1,6 +1,6 @@
 Package: vizWithSCE
 Title: Visualization of Bulk Differential Analysis Results for DESeq2 with Single-Cell Datasets Integation 
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(
     person(given = "Kwame",
            family = "Forbes",

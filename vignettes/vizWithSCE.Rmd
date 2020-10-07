@@ -13,23 +13,56 @@ vignette: >
 
 # Run DESeq2 to obtain bulk DE results
 
+We load gene-summarized RNA-seq counts.
+
 ```{r}
 library(airway)
-library(DESeq2)
-# ...
+data(gse)
+levels(gse$condition) <- c("untrt", "trt")
 ```
 
-# Run `integrateWithSCE`
+Here we filter to at least 3 samples with a count of 10 or higher.
 
 ```{r}
-dat <- integrateWithSCE(res, dds)
+library(DESeq2)
+dds <- DESeqDataSet(gse, design = ~donor + condition)
+keep <- rowSums(counts(dds) >= 10) >= 3
+dds <- dds[keep,]
 ```
+
+```{r}
+dds <- DESeq(dds)
+res <- results(dds)
+rownames(res) <- sub("\\..*","",rownames(res))
+```
+
+# Run `integrateWithSingleCell`
+
+```{r}
+source("R/integrate.R")
+dat <- integrateWithSingleCell(res, dds)
+```
+
+# Label cell types or clusters
+
+```{r}
+library(org.Hs.eg.db)
+library(SingleR)
+sce2 <- sce
+rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
+ref <- BlueprintEncodeData()
+pred <- SingleR(test=sce2, ref=ref, labels=ref$label.main)
+table(pred$labels)
+table(pred$labels, colLabels(sce))
+```
+
+Also show example with clustering...
 
 # Use *vizWithSCE* for visualization 
 
 ```{r}
 library(vizWithSCE)
-# ...
+vizWithSCE(dat, which=1)
 ```
 
 # Session info
