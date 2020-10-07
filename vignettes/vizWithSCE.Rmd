@@ -44,9 +44,12 @@ dat <- integrateWithSingleCell(res, dds)
 ```
 
 ```{r results="hide"}
-library(Tenx...)
-pbmc <- pbmc4k()
-dat$sce <- pbmc
+library(TENxPBMCData)
+library(scater)
+tenx_pbmc4k <- TENxPBMCData(dataset = "pbmc4k")
+sce <- tenx_pbmc4k
+sce <-logNormCounts(sce)
+dat <- list(res=res, dds=dds, sce=sce)
 ```
 
 (later we will fix this so that it can be run non-interactively)
@@ -56,7 +59,7 @@ dat$sce <- pbmc
 ```{r}
 library(org.Hs.eg.db)
 library(SingleR)
-rownames(dat$sce) <- mapIds(org.Hs.eg.db, rownames(dat$sce), "SYMBOL", "ENSEMBL")
+rownames(dat$sce) <- mapIds(org.Hs.eg.db, keys=rownames(dat$sce), column="ENSEMBL", keytype="SYMBOL")
 ref <- BlueprintEncodeData()
 pred <- SingleR(test=dat$sce, ref=ref, labels=ref$label.main)
 table(pred$labels)
