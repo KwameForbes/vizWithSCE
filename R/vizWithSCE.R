@@ -4,6 +4,7 @@
 #'
 #'
 #' @param dat this is a variable of integratewithSingleCell
+#' @param which which gene to use for the violin plot
 #'
 #' @return nothing
 #'
@@ -18,12 +19,26 @@
 #' @author Kwame Forbes
 #'
 #' @export
-vizWithSCE <- function(dat) {
+vizWithSCE <- function(dat, which) {
   stopifnot(all(names(dat) == c("res", "dds", "sce")))
-  ggplot(dat, aes(label,logcounts)) +
-    geom_violin(scale="width") +
-    geom_sina(scale="width", alpha=.5) +
-    ggtitle("Cd52 expression across clusters")
 
-  plotColData(sce, y=I(logcts), x="label")
+  ## missing code for taking label and logcounts from sce
+
+  # log counts? dat$sce => extracts log counts, but which gene?
+
+  # gene according to 'which' => number of the gene in 'res' ranked by adjusted p-value
+
+  o <- order(dat$res$padj)
+  o[which] # top 'which' gene
+  rownames(res)[o[which]] # name of the top 'which' gene
+
+  dat$sce # this has log counts => index it by the name of the gene with the top 'which' adjusted p-value
+  
+  label <- colLabels(dat$sce)
+  
+  df <- data.frame(label, logcounts)
+  
+  ggplot(df, aes(label,logcounts)) +
+    geom_violin(scale="width") +
+    geom_sina(scale="width", alpha=.5)
 }

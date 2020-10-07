@@ -43,20 +43,23 @@ source("R/integrate.R")
 dat <- integrateWithSingleCell(res, dds)
 ```
 
+(later we will fix this so that it can be run non-interactively)
+
 # Label cell types or clusters
 
 ```{r}
 library(org.Hs.eg.db)
 library(SingleR)
-sce2 <- sce
-rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
+rownames(dat$sce) <- mapIds(org.Hs.eg.db, rownames(dat$sce), "SYMBOL", "ENSEMBL")
 ref <- BlueprintEncodeData()
-pred <- SingleR(test=sce2, ref=ref, labels=ref$label.main)
+pred <- SingleR(test=dat$sce, ref=ref, labels=ref$label.main)
 table(pred$labels)
-table(pred$labels, colLabels(sce))
+colLabels(dat$sce) <- pred$labels
 ```
 
 Also show example with clustering...
+
+...
 
 # Use *vizWithSCE* for visualization 
 
