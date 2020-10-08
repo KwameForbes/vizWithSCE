@@ -3,8 +3,8 @@
 #' @description A package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor, for downstream visualization tasks. After the user has pick a scRNA-seq dataset from integrateWithSingleCell.... The output of the function is...
 #'
 #'
-#' @param dat this is a variable of integratewithSingleCell
-#' @param which which gene to use for the violin plot
+#' @param dat this is a variable of integrateWithSingleCell
+#' @param which which gene to use for the violin plot. This is represented as a number that corresponds to the lowest adjusted p-value e.g. 1 for the lowest adjusted p-value, 2 for the second lowest adjusted p-value, 3 for the third, etc.
 #'
 #' @return nothing
 #'
@@ -12,7 +12,7 @@
 #'
 #' \dontrun{
 #' dat <- integrateWithSingleCell(res,dds)
-#' vizWithSCE(dat)
+#' vizWithSCE(dat, which=1)
 #' }
 #'
 #' @author Michael Love
@@ -22,10 +22,11 @@
 vizWithSCE <- function(dat, which) {
 
   browser()
-  
+
   stopifnot(all(names(dat) == c("res", "dds", "sce")))
 
   ## missing code for taking label and logcounts from sce
+  logcts <- logcounts(sce)
 
   # log counts? dat$sce => extracts log counts, but which gene?
 
@@ -36,12 +37,13 @@ vizWithSCE <- function(dat, which) {
   rownames(res)[o[which]] # name of the top 'which' gene
 
   dat$sce # this has log counts => index it by the name of the gene with the top 'which' adjusted p-value
-  
+
   label <- colLabels(dat$sce)
-  
-  df <- data.frame(label, logcounts)
-  
+
+  df <- data.frame(label=sce$label, logcounts=logcts)
+
   ggplot(df, aes(label,logcounts)) +
     geom_violin(scale="width") +
     geom_sina(scale="width", alpha=.5)
 }
+vizWithSCE(dat, which=1)
