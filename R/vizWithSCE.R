@@ -45,8 +45,8 @@ vizWithSCE <- function(dat, which) {
 
   df <- data.frame(label=colLabels(sce), logcounts=logcounts(sce)[gene,])
 
-  ggplot(df, aes(label,logcounts)) + geom_violin(scale="width") + geom_jitter(height = 0, width = 0.1)
+  ggplot(df, aes(label,logcounts)) + geom_violin(scale="width")  +
   ggforce::geom_sina(scale="width", alpha=.5)
 }
 vizWithSCE(dat, which=2)
-?geom_sina
+
