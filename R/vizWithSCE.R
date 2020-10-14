@@ -21,29 +21,32 @@
 #' @export
 vizWithSCE <- function(dat, which) {
 
-  browser()
+
 
   stopifnot(all(names(dat) == c("res", "dds", "sce")))
 
   ## missing code for taking label and logcounts from sce
-  logcts <- logcounts(sce)
-
   # log counts? dat$sce => extracts log counts, but which gene?
-
   # gene according to 'which' => number of the gene in 'res' ranked by adjusted p-value
 
-  o <- order(dat$res$padj)
+  res <- dat$res
+  dds <- dat$dds
+  sce <- dat$sce
+
+  o <- order(res$padj)
   o[which] # top 'which' gene
-  rownames(res)[o[which]] # name of the top 'which' gene
+  gene <-rownames(res)[o[which]] # name of the top 'which' gene
 
-  dat$sce # this has log counts => index it by the name of the gene with the top 'which' adjusted p-value
+  stopifnot(gene %in% rownames(sce))
 
-  label <- colLabels(dat$sce)
+  sce # this has log counts => index it by the name of the gene with the top 'which' adjusted p-value
 
-  df <- data.frame(label=sce$label, logcounts=logcts)
+  label <- colLabels(sce)
 
-  ggplot(df, aes(label,logcounts)) +
-    geom_violin(scale="width") +
-    geom_sina(scale="width", alpha=.5)
+  df <- data.frame(label=colLabels(sce), logcounts=logcounts(sce)[gene,])
+
+  ggplot(df, aes(label,logcounts)) + geom_violin(scale="width") + geom_jitter(height = 0, width = 0.1)
+  ggforce::geom_sina(scale="width", alpha=.5)
 }
-vizWithSCE(dat, which=1)
+vizWithSCE(dat, which=2)
+?geom_sina
