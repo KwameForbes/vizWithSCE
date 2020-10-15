@@ -9,7 +9,7 @@ vignette: >
 
 # Introduction
 
-*vizWithSCE* is an R package that allows users to ....
+*vizWithSCE* is an R package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor.
 
 # Run DESeq2 to obtain bulk DE results
 
