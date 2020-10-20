@@ -4,7 +4,8 @@
 #'
 #'
 #' @param dat this is a variable of integrateWithSingleCell
-#' @param which which gene to use for the violin plot. This is represented as a number that corresponds to the lowest adjusted p-value e.g. 1 for the lowest adjusted p-value, 2 for the second lowest adjusted p-value, 3 for the third, etc.
+#' @param which which gene to use for the violin plot. This is represented as a number that corresponds to the lowest adjusted p-value
+#' e.g. 1 for the lowest adjusted p-value, 2 for the second lowest adjusted p-value, 3 for the third, etc.
 #'
 #' @return nothing
 #'
