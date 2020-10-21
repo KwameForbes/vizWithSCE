@@ -2,8 +2,11 @@ library(shiny)
 library(ggplot2)
 
 ui <- fluidPage(
+  titlePanel("vizWithSCE"),
   sliderInput(inputId = "genes",
-              label = "Choose a number",
+              label = "Choose a number that corresponds to the gene's p-value. e.g.
+              1 for gene with the lowest p-value,2 for the gene with the 2nd lowest
+              p-value.",
               value = 1, min = 1,max = 100),
   plotOutput("violin")
 )
