@@ -24,7 +24,7 @@ vizWithSCE <- function(dat, which) {
 
 
 
-  stopifnot(all(names(dat) == c("res", "dds", "sce")))
+  #stopifnot(all(names(dat) == c("res", "dds", "sce")))
 
   ## missing code for taking label and logcounts from sce
   # log counts? dat$sce => extracts log counts, but which gene?
@@ -49,5 +49,5 @@ vizWithSCE <- function(dat, which) {
   ggplot(df, aes(label,logcounts)) + geom_violin(scale="width")  +
   ggforce::geom_sina(scale="width", alpha=.5)
 }
-vizWithSCE(dat, which=2)
+#  vizWithSCE(dat, which=3)
 
