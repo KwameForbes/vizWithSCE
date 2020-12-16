@@ -39,7 +39,6 @@ rownames(res) <- sub("\\..*","",rownames(res))
 # Run `integrateWithSingleCell`
 
 ```{r eval=FALSE}
-source("R/integrate.R")
 dat <- integrateWithSingleCell(res, dds)
 ```
 
