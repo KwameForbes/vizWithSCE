@@ -49,6 +49,6 @@ vizWithSCE <- function(dat, which) {
   ggplot(df, aes(label,logcounts)) + geom_violin(scale="width")  +
   ggforce::geom_sina(scale="width", alpha=.5)
 }
-#  vizWithSCE(dat, which=3)
+# vizWithSCE(dat, which=3)
 
 
