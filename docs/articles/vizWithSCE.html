@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>vizWithSCE • vizWithSCE</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/Sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vizWithSCE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
       </span>
     </div>
 
@@ -76,10 +76,24 @@
 <h1 class="hasAnchor">
 <a href="#run-deseq2-to-obtain-bulk-de-results" class="anchor"></a>Run DESeq2 to obtain bulk DE results</h1>
 <p>We load gene-summarized RNA-seq counts.</p>
+<p>Here we filter to at least 3 samples with a count of 10 or higher.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: SummarizedExperiment</code></pre>
-<pre><code>## Loading required package: GenomicRanges</code></pre>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">gse</span><span class="op">$</span><span class="va">condition</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"untrt"</span>, <span class="st">"trt"</span><span class="op">)</span>
+<span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSet</a></span><span class="op">(</span><span class="va">gse</span>, design <span class="op">=</span> <span class="op">~</span><span class="va">donor</span> <span class="op">+</span> <span class="va">condition</span><span class="op">)</span>
+<span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/counts.html">counts</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3</span>
+<span class="va">dds</span> <span class="op">&lt;-</span> <span class="va">dds</span><span class="op">[</span><span class="va">keep</span>,<span class="op">]</span>
+<span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeq.html">DESeq</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/results.html">results</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"\\..*"</span>,<span class="st">""</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
+<span class="co"># because the above un-evaluated code chunk</span>
+<span class="co"># is slow to run</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span></code></pre></div>
+<pre><code>## Loading required package: S4Vectors</code></pre>
 <pre><code>## Loading required package: stats4</code></pre>
 <pre><code>## Loading required package: BiocGenerics</code></pre>
 <pre><code>## Loading required package: parallel</code></pre>
@@ -101,14 +115,15 @@
 ##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
 ##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
 ##     union, unique, unsplit, which, which.max, which.min</code></pre>
-<pre><code>## Loading required package: S4Vectors</code></pre>
 <pre><code>## 
 ## Attaching package: 'S4Vectors'</code></pre>
 <pre><code>## The following object is masked from 'package:base':
 ## 
 ##     expand.grid</code></pre>
 <pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
 <pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
 <pre><code>## Loading required package: Biobase</code></pre>
 <pre><code>## Welcome to Bioconductor
 ## 
@@ -130,42 +145,30 @@
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     aperm, apply, rowsum</code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">gse</span><span class="op">$</span><span class="va">condition</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"untrt"</span>, <span class="st">"trt"</span><span class="op">)</span></code></pre></div>
-<p>Here we filter to at least 3 samples with a count of 10 or higher.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span>
-<span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSet</a></span><span class="op">(</span><span class="va">gse</span>, design <span class="op">=</span> <span class="op">~</span><span class="va">donor</span> <span class="op">+</span> <span class="va">condition</span><span class="op">)</span></code></pre></div>
-<pre><code>## using counts and average transcript lengths from tximeta</code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/counts.html">counts</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3</span>
-<span class="va">dds</span> <span class="op">&lt;-</span> <span class="va">dds</span><span class="op">[</span><span class="va">keep</span>,<span class="op">]</span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeq.html">DESeq</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></code></pre></div>
-<pre><code>## estimating size factors</code></pre>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vizWithSCE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
+<span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/estimateSizeFactors.html">estimateSizeFactors</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></code></pre></div>
 <pre><code>## using 'avgTxLength' from assays(dds), correcting for library size</code></pre>
-<pre><code>## estimating dispersions</code></pre>
-<pre><code>## gene-wise dispersion estimates</code></pre>
-<pre><code>## mean-dispersion relationship</code></pre>
-<pre><code>## final dispersion estimates</code></pre>
-<pre><code>## fitting model and testing</code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/results.html">results</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"\\..*"</span>,<span class="st">""</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="run-integratewithsinglecell" class="section level1">
 <h1 class="hasAnchor">
 <a href="#run-integratewithsinglecell" class="anchor"></a>Run <code>integrateWithSingleCell</code>
 </h1>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<p>We run <code>integrateWithSingleCell</code> and pick number 8 from the dataset selection.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu">integrateWithSingleCell</span><span class="op">(</span><span class="va">res</span>, <span class="va">dds</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TENxPBMCData</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
+<span class="co"># because the above un-evaluated code chunk</span>
+<span class="co"># involves user input.</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TENxPBMCData</span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: SingleCellExperiment</code></pre>
 <pre><code>## Loading required package: HDF5Array</code></pre>
 <pre><code>## Loading required package: rhdf5</code></pre>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## 
@@ -173,65 +176,51 @@
 <pre><code>## The following object is masked from 'package:DESeq2':
 ## 
 ##     fpkm</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tenx_pbmc4k</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TENxPBMCData/man/TENxPBMCData.html">TENxPBMCData</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="st">"pbmc4k"</span><span class="op">)</span></code></pre></div>
 <pre><code>## snapshotDate(): 2020-04-27</code></pre>
 <pre><code>## see ?TENxPBMCData and browseVignettes('TENxPBMCData') for documentation</code></pre>
 <pre><code>## loading from cache</code></pre>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sce</span> <span class="op">&lt;-</span> <span class="va">tenx_pbmc4k</span>
-<span class="va">sce</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span>
-<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>res<span class="op">=</span><span class="va">res</span>, dds<span class="op">=</span><span class="va">dds</span>, sce<span class="op">=</span><span class="va">sce</span><span class="op">)</span></code></pre></div>
+<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>res<span class="op">=</span><span class="va">res</span>, dds<span class="op">=</span><span class="va">dds</span>, sce<span class="op">=</span><span class="va">sce</span><span class="op">)</span>
+<span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span></code></pre></div>
 <p>(later we will fix this so that it can be run non-interactively)</p>
 </div>
 <div id="label-cell-types-or-clusters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#label-cell-types-or-clusters" class="anchor"></a>Label cell types or clusters</h1>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: AnnotationDbi</code></pre>
-<pre><code>## </code></pre>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/SingleR">SingleR</a></span><span class="op">)</span>
-<span class="va">ref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleR/man/BlueprintEncodeData.html">BlueprintEncodeData</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## snapshotDate(): 2020-04-27</code></pre>
-<pre><code>## see ?SingleR and browseVignettes('SingleR') for documentation</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## see ?SingleR and browseVignettes('SingleR') for documentation</code></pre>
-<pre><code>## loading from cache</code></pre>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sce2</span> <span class="op">&lt;-</span> <span class="va">sce</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span>, <span class="st">"SYMBOL"</span>, <span class="st">"ENSEMBL"</span><span class="op">)</span></code></pre></div>
-<pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleR/man/SingleR.html">SingleR</a></span><span class="op">(</span>test<span class="op">=</span><span class="va">sce2</span>, ref<span class="op">=</span><span class="va">ref</span>, labels<span class="op">=</span><span class="va">ref</span><span class="op">$</span><span class="va">label.main</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pred</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-##      B-cells CD4+ T-cells CD8+ T-cells           DC          HSC    Monocytes 
-##          614          830         1438            1           11         1203 
-##     NK cells 
-##          243</code></pre>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">colLabels</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">pred</span><span class="op">$</span><span class="va">labels</span></code></pre></div>
-<p>Also show example with clustering…</p>
-<p>…</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/SingleR">SingleR</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">celldex</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span>
+<span class="va">ref</span> <span class="op">&lt;-</span> <span class="fu">celldex</span><span class="fu">::</span><span class="fu">BlueprintEncodeData</span><span class="op">(</span><span class="op">)</span>
+<span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span>
+<span class="va">sce2</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">$</span><span class="va">sce</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span>, <span class="st">"SYMBOL"</span>, <span class="st">"ENSEMBL"</span><span class="op">)</span>
+<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleR/man/SingleR.html">SingleR</a></span><span class="op">(</span>test<span class="op">=</span><span class="va">sce2</span>, ref<span class="op">=</span><span class="va">ref</span>, labels<span class="op">=</span><span class="va">ref</span><span class="op">$</span><span class="va">label.main</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pred</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span>
+<span class="fu">colLabels</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">pred</span><span class="op">$</span><span class="va">labels</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
+<span class="co"># because the above un-evaluated code chunk</span>
+<span class="co"># is slow to run</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span>
+<span class="fu">colLabels</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">labels</span></code></pre></div>
 </div>
 <div id="use-vizwithsce-for-visualization" class="section level1">
 <h1 class="hasAnchor">
 <a href="#use-vizwithsce-for-visualization" class="anchor"></a>Use <em>vizWithSCE</em> for visualization</h1>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vizWithSCE</span><span class="op">)</span>
-<span class="fu"><a href="../reference/vizWithSCE.html">vizWithSCE</a></span><span class="op">(</span><span class="va">dat</span>, which<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):
-## collapsing to unique 'x' values</code></pre>
-<pre><code>## Warning: Computation failed in `stat_sina()`:
-## need at least two non-NA values to interpolate</code></pre>
+<span class="fu"><a href="../reference/vizWithSCE.html">vizWithSCE</a></span><span class="op">(</span><span class="va">dat</span>, which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="vizWithSCE_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h1>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.2 (2020-06-22)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -249,17 +238,15 @@
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] vizWithSCE_0.0.2            SingleR_1.2.4              
-##  [3] org.Hs.eg.db_3.11.4         AnnotationDbi_1.50.3       
-##  [5] scater_1.16.2               ggplot2_3.3.2              
-##  [7] TENxPBMCData_1.6.0          HDF5Array_1.16.1           
-##  [9] rhdf5_2.32.4                SingleCellExperiment_1.10.1
-## [11] DESeq2_1.28.1               airway_1.8.0               
-## [13] SummarizedExperiment_1.18.2 DelayedArray_0.14.1        
-## [15] matrixStats_0.57.0          Biobase_2.48.0             
-## [17] GenomicRanges_1.40.0        GenomeInfoDb_1.24.2        
-## [19] IRanges_2.22.2              S4Vectors_0.26.1           
-## [21] BiocGenerics_0.34.0        
+##  [1] scater_1.16.2               ggplot2_3.3.2              
+##  [3] TENxPBMCData_1.6.0          HDF5Array_1.16.1           
+##  [5] rhdf5_2.32.4                SingleCellExperiment_1.10.1
+##  [7] vizWithSCE_0.0.3            DESeq2_1.28.1              
+##  [9] SummarizedExperiment_1.18.2 DelayedArray_0.14.1        
+## [11] matrixStats_0.57.0          Biobase_2.48.0             
+## [13] GenomicRanges_1.40.0        GenomeInfoDb_1.24.2        
+## [15] IRanges_2.22.2              S4Vectors_0.26.1           
+## [17] BiocGenerics_0.34.0        
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0              colorspace_2.0-0             
@@ -267,27 +254,27 @@
 ##   [5] XVector_0.28.0                BiocNeighbors_1.6.0          
 ##   [7] fs_1.5.0                      rstudioapi_0.13              
 ##   [9] farver_2.0.3                  bit64_4.0.5                  
-##  [11] interactiveDisplayBase_1.26.3 splines_4.0.2                
-##  [13] geneplotter_1.66.0            knitr_1.30                   
-##  [15] polyclip_1.10-0               annotate_1.66.0              
-##  [17] dbplyr_2.0.0                  ggforce_0.3.2                
-##  [19] shiny_1.5.0                   BiocManager_1.30.10          
-##  [21] compiler_4.0.2                httr_1.4.2                   
-##  [23] assertthat_0.2.1              Matrix_1.2-18                
-##  [25] fastmap_1.0.1                 tweenr_1.0.1                 
-##  [27] later_1.1.0.1                 BiocSingular_1.4.0           
-##  [29] htmltools_0.5.0               tools_4.0.2                  
-##  [31] rsvd_1.0.3                    gtable_0.3.0                 
-##  [33] glue_1.4.2                    GenomeInfoDbData_1.2.3       
-##  [35] dplyr_1.0.2                   rappdirs_0.3.1               
-##  [37] Rcpp_1.0.5                    pkgdown_1.6.1.9000           
-##  [39] vctrs_0.3.5                   ExperimentHub_1.14.2         
-##  [41] DelayedMatrixStats_1.10.1     xfun_0.19                    
-##  [43] stringr_1.4.0                 beachmat_2.4.0               
+##  [11] interactiveDisplayBase_1.26.3 AnnotationDbi_1.50.3         
+##  [13] splines_4.0.2                 geneplotter_1.66.0           
+##  [15] knitr_1.30                    polyclip_1.10-0              
+##  [17] annotate_1.66.0               dbplyr_2.0.0                 
+##  [19] ggforce_0.3.2                 shiny_1.5.0                  
+##  [21] BiocManager_1.30.10           compiler_4.0.2               
+##  [23] httr_1.4.2                    assertthat_0.2.1             
+##  [25] Matrix_1.2-18                 fastmap_1.0.1                
+##  [27] later_1.1.0.1                 tweenr_1.0.1                 
+##  [29] BiocSingular_1.4.0            htmltools_0.5.0              
+##  [31] tools_4.0.2                   rsvd_1.0.3                   
+##  [33] gtable_0.3.0                  glue_1.4.2                   
+##  [35] GenomeInfoDbData_1.2.3        dplyr_1.0.2                  
+##  [37] rappdirs_0.3.1                Rcpp_1.0.5                   
+##  [39] pkgdown_1.6.1.9000            vctrs_0.3.5                  
+##  [41] ExperimentHub_1.14.2          DelayedMatrixStats_1.10.1    
+##  [43] xfun_0.19                     stringr_1.4.0                
 ##  [45] mime_0.9                      lifecycle_0.2.0              
 ##  [47] irlba_2.3.3                   XML_3.99-0.5                 
-##  [49] AnnotationHub_2.20.2          MASS_7.3-53                  
-##  [51] zlibbioc_1.34.0               scales_1.1.1                 
+##  [49] AnnotationHub_2.20.2          zlibbioc_1.34.0              
+##  [51] MASS_7.3-53                   scales_1.1.1                 
 ##  [53] ragg_0.4.0                    promises_1.1.1               
 ##  [55] RColorBrewer_1.1-2            yaml_2.2.1                   
 ##  [57] curl_4.3                      memoise_1.1.0                
