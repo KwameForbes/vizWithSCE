@@ -16,8 +16,8 @@
 #' vizWithSCE(dat, which=1)
 #' }
 #'
-#' @author Michael Love
 #' @author Kwame Forbes
+#' @author Michael Love 
 #'
 #' @export
 vizWithSCE <- function(dat, which) {

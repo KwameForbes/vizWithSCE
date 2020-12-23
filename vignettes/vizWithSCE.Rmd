@@ -15,66 +15,84 @@ vignette: >
 
 We load gene-summarized RNA-seq counts.
 
-```{r}
-library(airway)
-data(gse)
-levels(gse$condition) <- c("untrt", "trt")
-```
-
 Here we filter to at least 3 samples with a count of 10 or higher.
 
-```{r}
+```{r eval=FALSE}
+library(airway)
 library(DESeq2)
+data(gse)
+levels(gse$condition) <- c("untrt", "trt")
 dds <- DESeqDataSet(gse, design = ~donor + condition)
 keep <- rowSums(counts(dds) >= 10) >= 3
 dds <- dds[keep,]
-```
-
-```{r}
 dds <- DESeq(dds)
 res <- results(dds)
 rownames(res) <- sub("\\..*","",rownames(res))
 ```
 
+```{r results="hide"}
+# the following is evaluated but hidden,
+# because the above un-evaluated code chunk
+# is slow to run
+library(DESeq2)
+library(vizWithSCE)
+data(dds)
+dds <- estimateSizeFactors(dds)
+data(res)
+```
+
 # Run `integrateWithSingleCell`
+
+We run `integrateWithSingleCell` and pick number 8 from the dataset
+selection. 
 
 ```{r eval=FALSE}
 dat <- integrateWithSingleCell(res, dds)
 ```
 
 ```{r results="hide"}
+# the following is evaluated but hidden,
+# because the above un-evaluated code chunk
+# involves user input.
 library(TENxPBMCData)
 library(scater)
 tenx_pbmc4k <- TENxPBMCData(dataset = "pbmc4k")
 sce <- tenx_pbmc4k
-sce <-logNormCounts(sce)
 dat <- list(res=res, dds=dds, sce=sce)
+dat$sce <- logNormCounts(dat$sce)
 ```
 
 (later we will fix this so that it can be run non-interactively)
 
 # Label cell types or clusters
 
-```{r}
+```{r eval=FALSE}
 library(org.Hs.eg.db)
 library(SingleR)
-ref <- BlueprintEncodeData()
-sce2 <- sce
+library(celldex)
+library(scater)
+ref <- celldex::BlueprintEncodeData()
+dat$sce <- logNormCounts(dat$sce)
+sce2 <- dat$sce
 rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
 pred <- SingleR(test=sce2, ref=ref, labels=ref$label.main)
 table(pred$labels)
 colLabels(dat$sce) <- pred$labels
 ```
 
-Also show example with clustering...
-
-...
+```{r results="hide"}
+# the following is evaluated but hidden,
+# because the above un-evaluated code chunk
+# is slow to run
+data(labels)
+colLabels(dat$sce) <- labels
+```
 
 # Use *vizWithSCE* for visualization 
 
 ```{r}
 library(vizWithSCE)
-vizWithSCE(dat, which=1)
+vizWithSCE(dat, which=2)
 ```
 
 # Session info
