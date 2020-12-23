@@ -5,6 +5,3 @@ articles:
   vizWithSCE: vizWithSCE.html
 last_built: 2020-12-18T18:17Z
 
-template:
-  params:
-    bootswatch: cerulean
