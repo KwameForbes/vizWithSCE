@@ -34,7 +34,6 @@ rownames(res) <- sub("\\..*","",rownames(res))
 # the following is evaluated but hidden,
 # because the above un-evaluated code chunk
 # is slow to run
-library(DESeq2)
 library(vizWithSCE)
 data(dds)
 dds <- estimateSizeFactors(dds)
