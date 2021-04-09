@@ -9,7 +9,14 @@ vignette: >
 
 # Introduction
 
-*vizWithSCE* is an R package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor. vizWithSCE currently takes two arguments, a list containing res, dds, and a SingleCellExperiment (sce) as selected by the user and a second argument which. The which argument is the gene to use for the violin plot, represented as a number that corresponds to the gene with the n-th smallest adjusted p-value, e.g., 1 for the gene with lowest adjusted p-value, etc.
+*vizWithSCE* is an R package that assists with the visualization of
+the integration of bulk DE results tables with pre-processed scRNA-seq
+datasets available on Bioconductor. vizWithSCE currently takes two
+arguments, a list containing res, dds, and a SingleCellExperiment
+(sce) as selected by the user and a second argument which. The which
+argument is the gene to use for the violin plot, represented as a
+number that corresponds to the gene with the n-th smallest adjusted
+p-value, e.g., 1 for the gene with lowest adjusted p-value, etc. 
 
 # Run DESeq2 to obtain bulk DE results
 
@@ -20,7 +27,11 @@ Here we filter to at least 3 samples with a count of 10 or higher.
 ```{r eval=FALSE}
 library(airway)
 ```
-For our workflow, we used the bulk dataset “airway”, which contains four human airway smooth muscle cell lines treated with dexamethasone, a steroid used to treat inflammation. This pre-processed dataset is available on Bioconductor.
+For our workflow, we used the bulk dataset “airway”, which contains
+four human airway smooth muscle cell lines treated with dexamethasone,
+a steroid used to treat inflammation. This pre-processed dataset is
+available on Bioconductor. 
+
 ```{r eval=FALSE}
 library(DESeq2)
 data(gse)
@@ -39,14 +50,17 @@ rownames(res) <- sub("\\..*","",rownames(res))
 # is slow to run
 library(vizWithSCE)
 data(dds)
-dds <- estimateSizeFactors(dds)
+dds <- DESeq2::estimateSizeFactors(dds)
 data(res)
 ```
 
 # Run `integrateWithSingleCell`
 
 We run `integrateWithSingleCell` and pick number 8 from the dataset
-selection as our single-cell dataset. Within PBMC there are nine different scRNA-seq datasets. We chose the dataset pbmc4k, which contains roughly 4 thousand cells. This pre-processed dataset is available on Bioconductor.
+selection as our single-cell dataset. Within PBMC there are nine
+different scRNA-seq datasets. We chose the dataset pbmc4k, which
+contains roughly 4 thousand cells. This pre-processed dataset is
+available on Bioconductor. 
 
 ```{r eval=FALSE}
 dat <- integrateWithSingleCell(res, dds)
