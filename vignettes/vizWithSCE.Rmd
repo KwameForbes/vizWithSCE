@@ -15,8 +15,8 @@ datasets available on Bioconductor. vizWithSCE currently takes two
 arguments, a list containing res, dds, and a SingleCellExperiment
 (sce) as selected by the user and a second argument which. The which
 argument is the gene to use for the violin plot, represented as a
-number that corresponds to the gene with the n-th smallest adjusted
-p-value, e.g., 1 for the gene with lowest adjusted p-value, etc. 
+number that corresponds to the gene with the n-th smallest 
+p-value, e.g., 1 for the gene with lowest p-value, etc. 
 
 # Run DESeq2 to obtain bulk DE results
 
@@ -27,7 +27,8 @@ Here we filter to at least 3 samples with a count of 10 or higher.
 ```{r eval=FALSE}
 library(airway)
 ```
-For our workflow, we used the bulk dataset “airway”, which contains
+
+For our workflow, we used the bulk dataset "airway", which contains
 four human airway smooth muscle cell lines treated with dexamethasone,
 a steroid used to treat inflammation. This pre-processed dataset is
 available on Bioconductor. 
@@ -44,7 +45,7 @@ res <- results(dds)
 rownames(res) <- sub("\\..*","",rownames(res))
 ```
 
-```{r results="hide"}
+```{r echo=FALSE, results="hide"}
 # the following is evaluated but hidden,
 # because the above un-evaluated code chunk
 # is slow to run
@@ -66,7 +67,7 @@ available on Bioconductor.
 dat <- integrateWithSingleCell(res, dds)
 ```
 
-```{r results="hide"}
+```{r echo=FALSE, results="hide"}
 # the following is evaluated but hidden,
 # because the above un-evaluated code chunk
 # involves user input.
@@ -96,7 +97,7 @@ table(pred$labels)
 colLabels(dat$sce) <- pred$labels
 ```
 
-```{r results="hide"}
+```{r echo=FALSE, results="hide"}
 # the following is evaluated but hidden,
 # because the above un-evaluated code chunk
 # is slow to run

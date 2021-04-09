@@ -1,6 +1,6 @@
 Package: vizWithSCE
 Title: Visualization of Bulk Differential Analysis Results for DESeq2 with Single-Cell Datasets Integation 
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person(given = "Kwame",
            family = "Forbes",
@@ -19,7 +19,8 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
-    ggplot2
+    ggplot2,
+    ggforce
 Suggests: 
     knitr,
     rmarkdown,

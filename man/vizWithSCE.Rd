@@ -2,21 +2,27 @@
 % Please edit documentation in R/vizWithSCE.R
 \name{vizWithSCE}
 \alias{vizWithSCE}
-\title{Visualize the integration of bulk DE results with Bioconductor single-cell RNA-seq datasets}
+\title{Visualize the integration of bulk DE results with scRNA-seq datasets}
 \usage{
 vizWithSCE(dat, which)
 }
 \arguments{
-\item{dat}{this is a variable of integrateWithSingleCell}
+\item{dat}{the output of integrateWithSingleCell, a list with
+results table (res), DESeqDataSet (dds), and SingleCellExperiment (sce)}
 
-\item{which}{which gene to use for the violin plot. This is represented as a number that corresponds to the lowest adjusted p-value
-e.g. 1 for the lowest adjusted p-value, 2 for the second lowest adjusted p-value, 3 for the third, etc.}
+\item{which}{which gene to use for the violin plot.
+This is represented as a number that corresponds to the lowest p-value
+e.g. 1 for the lowest p-value, 2 for the second lowest p-value, etc.}
 }
 \value{
 nothing
 }
 \description{
-A package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor, for downstream visualization tasks. After the user has pick a scRNA-seq dataset from integrateWithSingleCell.... The output of the function is...
+A package that assists with the visualization of the integration
+of bulk DE results tables with pre-processed scRNA-seq datasets available
+on Bioconductor, for downstream visualization tasks. After the user has pick
+a scRNA-seq dataset from integrateWithSingleCell....
+The output of the function is...
 }
 \examples{
 
@@ -27,7 +33,7 @@ vizWithSCE(dat, which=1)
 
 }
 \author{
-Michael Love
-
 Kwame Forbes
+
+Michael Love
 }
