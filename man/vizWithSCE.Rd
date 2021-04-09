@@ -15,14 +15,19 @@ This is represented as a number that corresponds to the lowest p-value
 e.g. 1 for the lowest p-value, 2 for the second lowest p-value, etc.}
 }
 \value{
-nothing
+a violin plot (see Description)
 }
 \description{
-A package that assists with the visualization of the integration
+This function assists with visualization of the integration
 of bulk DE results tables with pre-processed scRNA-seq datasets available
-on Bioconductor, for downstream visualization tasks. After the user has pick
-a scRNA-seq dataset from integrateWithSingleCell....
-The output of the function is...
+on Bioconductor. After a user has picked a scRNA-seq dataset
+using \code{integrateWithSingleCell} from the DESeq2 package,
+they will have a results table, DESeqDataSet, and a SingleCellExperiment.
+After annotating the SingleCellExperiment (see vignette), they can
+provide that list of object to this function.
+This function then produces a violin plot of the expression of
+genes of interest from the bulk DE analysis across annotated cell types
+in the single-cell dataset.
 }
 \examples{
 

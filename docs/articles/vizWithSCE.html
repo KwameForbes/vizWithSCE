@@ -31,12 +31,18 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vizWithSCE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
 <li>
   <a href="../articles/vizWithSCE.html">Get started</a>
 </li>
@@ -54,11 +60,13 @@
 
       
 
-      </header><script src="vizWithSCE_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="vizWithSCE_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>vizWithSCE</h1>
+                        <h4 class="author">Kwame Forbes</h4>
             
+            <h4 class="date">04/09/2021</h4>
       
       
       <div class="hidden name"><code>vizWithSCE.Rmd</code></div>
@@ -70,16 +78,18 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p><em>vizWithSCE</em> is an R package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor.</p>
+<p><em>vizWithSCE</em> is an R package that assists with the visualization of the integration of bulk DE results tables with pre-processed scRNA-seq datasets available on Bioconductor. vizWithSCE currently takes two arguments, a list containing res, dds, and a SingleCellExperiment (sce) as selected by the user and a second argument which. The which argument is the gene to use for the violin plot, represented as a number that corresponds to the gene with the n-th smallest p-value, e.g., 1 for the gene with lowest p-value, etc.</p>
 </div>
 <div id="run-deseq2-to-obtain-bulk-de-results" class="section level1">
 <h1 class="hasAnchor">
 <a href="#run-deseq2-to-obtain-bulk-de-results" class="anchor"></a>Run DESeq2 to obtain bulk DE results</h1>
-<p>We load gene-summarized RNA-seq counts.</p>
-<p>Here we filter to at least 3 samples with a count of 10 or higher.</p>
+<p>We first load gene-summarized RNA-seq counts.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></code></pre></div>
+<p>For our workflow, we used the bulk dataset “airway”, which contains four human airway smooth muscle cell lines treated with dexamethasone, a steroid used to treat inflammation. This pre-processed dataset is available on Bioconductor. Here we filter to at least 3 samples with a count of 10 or higher, and then perform differential expression analysis.</p>
+<p>Mike: why did you change the rownames?</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">gse</span><span class="op">$</span><span class="va">condition</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"untrt"</span>, <span class="st">"trt"</span><span class="op">)</span>
 <span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html">DESeqDataSet</a></span><span class="op">(</span><span class="va">gse</span>, design <span class="op">=</span> <span class="op">~</span><span class="va">donor</span> <span class="op">+</span> <span class="va">condition</span><span class="op">)</span>
@@ -88,143 +98,60 @@
 <span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeq.html">DESeq</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
 <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/results.html">results</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">"\\..*"</span>,<span class="st">""</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
-<span class="co"># because the above un-evaluated code chunk</span>
-<span class="co"># is slow to run</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: S4Vectors</code></pre>
-<pre><code>## Loading required package: stats4</code></pre>
-<pre><code>## Loading required package: BiocGenerics</code></pre>
-<pre><code>## Loading required package: parallel</code></pre>
-<pre><code>## 
-## Attaching package: 'BiocGenerics'</code></pre>
-<pre><code>## The following objects are masked from 'package:parallel':
-## 
-##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     IQR, mad, sd, var, xtabs</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which, which.max, which.min</code></pre>
-<pre><code>## 
-## Attaching package: 'S4Vectors'</code></pre>
-<pre><code>## The following object is masked from 'package:base':
-## 
-##     expand.grid</code></pre>
-<pre><code>## Loading required package: IRanges</code></pre>
-<pre><code>## Loading required package: GenomicRanges</code></pre>
-<pre><code>## Loading required package: GenomeInfoDb</code></pre>
-<pre><code>## Loading required package: SummarizedExperiment</code></pre>
-<pre><code>## Loading required package: Biobase</code></pre>
-<pre><code>## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.</code></pre>
-<pre><code>## Loading required package: DelayedArray</code></pre>
-<pre><code>## Loading required package: matrixStats</code></pre>
-<pre><code>## 
-## Attaching package: 'matrixStats'</code></pre>
-<pre><code>## The following objects are masked from 'package:Biobase':
-## 
-##     anyMissing, rowMedians</code></pre>
-<pre><code>## 
-## Attaching package: 'DelayedArray'</code></pre>
-<pre><code>## The following objects are masked from 'package:matrixStats':
-## 
-##     colMaxs, colMins, colRanges, rowMaxs, rowMins, rowRanges</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     aperm, apply, rowsum</code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vizWithSCE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>
-<span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/estimateSizeFactors.html">estimateSizeFactors</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></code></pre></div>
 <pre><code>## using 'avgTxLength' from assays(dds), correcting for library size</code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="run-integratewithsinglecell" class="section level1">
 <h1 class="hasAnchor">
 <a href="#run-integratewithsinglecell" class="anchor"></a>Run <code>integrateWithSingleCell</code>
 </h1>
-<p>We run <code>integrateWithSingleCell</code> and pick number 8 from the dataset selection.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu">integrateWithSingleCell</span><span class="op">(</span><span class="va">res</span>, <span class="va">dds</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
-<span class="co"># because the above un-evaluated code chunk</span>
-<span class="co"># involves user input.</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TENxPBMCData</span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: SingleCellExperiment</code></pre>
-<pre><code>## Loading required package: HDF5Array</code></pre>
-<pre><code>## Loading required package: rhdf5</code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## 
-## Attaching package: 'scater'</code></pre>
-<pre><code>## The following object is masked from 'package:DESeq2':
-## 
-##     fpkm</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tenx_pbmc4k</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TENxPBMCData/man/TENxPBMCData.html">TENxPBMCData</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="st">"pbmc4k"</span><span class="op">)</span></code></pre></div>
-<pre><code>## snapshotDate(): 2020-04-27</code></pre>
-<pre><code>## see ?TENxPBMCData and browseVignettes('TENxPBMCData') for documentation</code></pre>
-<pre><code>## loading from cache</code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sce</span> <span class="op">&lt;-</span> <span class="va">tenx_pbmc4k</span>
-<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>res<span class="op">=</span><span class="va">res</span>, dds<span class="op">=</span><span class="va">dds</span>, sce<span class="op">=</span><span class="va">sce</span><span class="op">)</span>
-<span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span></code></pre></div>
-<p>(later we will fix this so that it can be run non-interactively)</p>
+<p>We run <code>integrateWithSingleCell</code> and pick number 8 from the dataset selection as our single-cell dataset. Within PBMC there are nine different scRNA-seq datasets. We chose the dataset pbmc4k, which contains roughly 4 thousand cells. This pre-processed dataset is available on Bioconductor.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/integrateWithSingleCell.html">integrateWithSingleCell</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">dds</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="label-cell-types-or-clusters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#label-cell-types-or-clusters" class="anchor"></a>Label cell types or clusters</h1>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<p>Mike: what is scater used here for?</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span>
+<span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">scater</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span>
+<span class="va">sce2</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">$</span><span class="va">sce</span></code></pre></div>
+<p>Here we convert the rownames from Ensembl to symbol, to match with the cell annotation reference dataset, described below.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span>, <span class="st">"SYMBOL"</span>, <span class="st">"ENSEMBL"</span><span class="op">)</span></code></pre></div>
+<p>Mike: what is celldex used for here? what is SingleR used here for?</p>
+<p>Mike: after this step what has changed in <code>dat</code>?</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/celldex">celldex</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/SingleR">SingleR</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">celldex</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span>
-<span class="va">ref</span> <span class="op">&lt;-</span> <span class="fu">celldex</span><span class="fu">::</span><span class="fu">BlueprintEncodeData</span><span class="op">(</span><span class="op">)</span>
-<span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span>
-<span class="va">sce2</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">$</span><span class="va">sce</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span>, <span class="st">"SYMBOL"</span>, <span class="st">"ENSEMBL"</span><span class="op">)</span>
-<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleR/man/SingleR.html">SingleR</a></span><span class="op">(</span>test<span class="op">=</span><span class="va">sce2</span>, ref<span class="op">=</span><span class="va">ref</span>, labels<span class="op">=</span><span class="va">ref</span><span class="op">$</span><span class="va">label.main</span><span class="op">)</span>
+<span class="va">ref</span> <span class="op">&lt;-</span> <span class="fu">celldex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/celldex/man/BlueprintEncodeData.html">BlueprintEncodeData</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu">SingleR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleR/man/SingleR.html">SingleR</a></span><span class="op">(</span>test<span class="op">=</span><span class="va">sce2</span>, ref<span class="op">=</span><span class="va">ref</span>, labels<span class="op">=</span><span class="va">ref</span><span class="op">$</span><span class="va">label.main</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pred</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span>
 <span class="fu">colLabels</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">pred</span><span class="op">$</span><span class="va">labels</span></code></pre></div>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># the following is evaluated but hidden,</span>
-<span class="co"># because the above un-evaluated code chunk</span>
-<span class="co"># is slow to run</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span>
-<span class="fu">colLabels</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">labels</span></code></pre></div>
 </div>
 <div id="use-vizwithsce-for-visualization" class="section level1">
 <h1 class="hasAnchor">
 <a href="#use-vizwithsce-for-visualization" class="anchor"></a>Use <em>vizWithSCE</em> for visualization</h1>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<p>Mike: what does the following plot tell us about the gene with the 2nd smallest p-value? Which single cells is it expressed in?</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vizWithSCE</span><span class="op">)</span>
 <span class="fu"><a href="../reference/vizWithSCE.html">vizWithSCE</a></span><span class="op">(</span><span class="va">dat</span>, which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p><img src="vizWithSCE_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="vizWithSCE_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+</div>
+<div id="future-direction" class="section level1">
+<h1 class="hasAnchor">
+<a href="#future-direction" class="anchor"></a>Future direction</h1>
+<p>Mike: what else would you like to do with the package? You can list anything you like here.</p>
 </div>
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h1>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R version 4.0.2 (2020-06-22)
+<pre><code>## R version 4.0.4 (2021-02-15)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
-## Running under: macOS  10.16
+## Running under: macOS Big Sur 10.16
 ## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
@@ -238,67 +165,73 @@
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scater_1.16.2               ggplot2_3.3.2              
-##  [3] TENxPBMCData_1.6.0          HDF5Array_1.16.1           
-##  [5] rhdf5_2.32.4                SingleCellExperiment_1.10.1
-##  [7] vizWithSCE_0.0.3            DESeq2_1.28.1              
-##  [9] SummarizedExperiment_1.18.2 DelayedArray_0.14.1        
-## [11] matrixStats_0.57.0          Biobase_2.48.0             
-## [13] GenomicRanges_1.40.0        GenomeInfoDb_1.24.2        
-## [15] IRanges_2.22.2              S4Vectors_0.26.1           
-## [17] BiocGenerics_0.34.0        
+##  [1] scater_1.18.6               ggplot2_3.3.3              
+##  [3] TENxPBMCData_1.8.0          HDF5Array_1.18.1           
+##  [5] rhdf5_2.34.0                DelayedArray_0.16.2        
+##  [7] Matrix_1.3-2                SingleCellExperiment_1.12.0
+##  [9] SummarizedExperiment_1.20.0 Biobase_2.50.0             
+## [11] GenomicRanges_1.42.0        GenomeInfoDb_1.26.2        
+## [13] IRanges_2.24.1              S4Vectors_0.28.1           
+## [15] BiocGenerics_0.36.0         MatrixGenerics_1.2.1       
+## [17] matrixStats_0.58.0          vizWithSCE_0.0.4           
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0              colorspace_2.0-0             
 ##   [3] ellipsis_0.3.1                rprojroot_2.0.2              
-##   [5] XVector_0.28.0                BiocNeighbors_1.6.0          
-##   [7] fs_1.5.0                      rstudioapi_0.13              
-##   [9] farver_2.0.3                  bit64_4.0.5                  
-##  [11] interactiveDisplayBase_1.26.3 AnnotationDbi_1.50.3         
-##  [13] splines_4.0.2                 geneplotter_1.66.0           
-##  [15] knitr_1.30                    polyclip_1.10-0              
-##  [17] annotate_1.66.0               dbplyr_2.0.0                 
-##  [19] ggforce_0.3.2                 shiny_1.5.0                  
-##  [21] BiocManager_1.30.10           compiler_4.0.2               
-##  [23] httr_1.4.2                    assertthat_0.2.1             
-##  [25] Matrix_1.2-18                 fastmap_1.0.1                
-##  [27] later_1.1.0.1                 tweenr_1.0.1                 
-##  [29] BiocSingular_1.4.0            htmltools_0.5.0              
-##  [31] tools_4.0.2                   rsvd_1.0.3                   
-##  [33] gtable_0.3.0                  glue_1.4.2                   
-##  [35] GenomeInfoDbData_1.2.3        dplyr_1.0.2                  
-##  [37] rappdirs_0.3.1                Rcpp_1.0.5                   
-##  [39] pkgdown_1.6.1.9000            vctrs_0.3.5                  
-##  [41] ExperimentHub_1.14.2          DelayedMatrixStats_1.10.1    
-##  [43] xfun_0.19                     stringr_1.4.0                
-##  [45] mime_0.9                      lifecycle_0.2.0              
-##  [47] irlba_2.3.3                   XML_3.99-0.5                 
-##  [49] AnnotationHub_2.20.2          zlibbioc_1.34.0              
-##  [51] MASS_7.3-53                   scales_1.1.1                 
-##  [53] ragg_0.4.0                    promises_1.1.1               
-##  [55] RColorBrewer_1.1-2            yaml_2.2.1                   
-##  [57] curl_4.3                      memoise_1.1.0                
-##  [59] gridExtra_2.3                 stringi_1.5.3                
-##  [61] RSQLite_2.2.1                 BiocVersion_3.11.1           
-##  [63] genefilter_1.70.0             desc_1.2.0                   
-##  [65] BiocParallel_1.22.0           rlang_0.4.9                  
-##  [67] pkgconfig_2.0.3               systemfonts_0.3.2            
-##  [69] bitops_1.0-6                  evaluate_0.14                
-##  [71] lattice_0.20-41               purrr_0.3.4                  
-##  [73] Rhdf5lib_1.10.1               labeling_0.4.2               
-##  [75] bit_4.0.4                     tidyselect_1.1.0             
-##  [77] magrittr_2.0.1                R6_2.5.0                     
-##  [79] generics_0.1.0                DBI_1.1.0                    
-##  [81] pillar_1.4.7                  withr_2.3.0                  
-##  [83] survival_3.2-7                RCurl_1.98-1.2               
-##  [85] tibble_3.0.4                  crayon_1.3.4                 
-##  [87] BiocFileCache_1.12.1          rmarkdown_2.6                
-##  [89] viridis_0.5.1                 locfit_1.5-9.4               
-##  [91] grid_4.0.2                    blob_1.2.1                   
-##  [93] digest_0.6.27                 xtable_1.8-4                 
-##  [95] httpuv_1.5.4                  textshaping_0.2.1            
-##  [97] munsell_0.5.0                 beeswarm_0.2.3               
-##  [99] viridisLite_0.3.0             vipor_0.4.5</code></pre>
+##   [5] scuttle_1.0.4                 XVector_0.30.0               
+##   [7] BiocNeighbors_1.8.2           fs_1.5.0                     
+##   [9] farver_2.1.0                  bit64_4.0.5                  
+##  [11] interactiveDisplayBase_1.28.0 AnnotationDbi_1.52.0         
+##  [13] fansi_0.4.2                   splines_4.0.4                
+##  [15] sparseMatrixStats_1.2.1       cachem_1.0.4                 
+##  [17] geneplotter_1.68.0            knitr_1.31                   
+##  [19] polyclip_1.10-0               jsonlite_1.7.2               
+##  [21] annotate_1.68.0               dbplyr_2.1.0                 
+##  [23] ggforce_0.3.3                 shiny_1.6.0                  
+##  [25] BiocManager_1.30.10           compiler_4.0.4               
+##  [27] httr_1.4.2                    assertthat_0.2.1             
+##  [29] fastmap_1.1.0                 BiocSingular_1.6.0           
+##  [31] later_1.1.0.1                 tweenr_1.0.2                 
+##  [33] htmltools_0.5.1.1             tools_4.0.4                  
+##  [35] rsvd_1.0.3                    gtable_0.3.0                 
+##  [37] glue_1.4.2                    GenomeInfoDbData_1.2.4       
+##  [39] dplyr_1.0.5                   rappdirs_0.3.3               
+##  [41] Rcpp_1.0.6                    jquerylib_0.1.3              
+##  [43] pkgdown_1.6.1                 vctrs_0.3.6                  
+##  [45] rhdf5filters_1.2.0            ExperimentHub_1.16.0         
+##  [47] DelayedMatrixStats_1.12.3     xfun_0.22                    
+##  [49] stringr_1.4.0                 beachmat_2.6.4               
+##  [51] irlba_2.3.3                   mime_0.10                    
+##  [53] lifecycle_1.0.0               XML_3.99-0.5                 
+##  [55] AnnotationHub_2.22.0          zlibbioc_1.36.0              
+##  [57] MASS_7.3-53                   scales_1.1.1                 
+##  [59] ragg_1.1.2                    promises_1.2.0.1             
+##  [61] RColorBrewer_1.1-2            yaml_2.2.1                   
+##  [63] curl_4.3                      gridExtra_2.3                
+##  [65] memoise_2.0.0                 sass_0.3.1                   
+##  [67] stringi_1.5.3                 RSQLite_2.2.3                
+##  [69] highr_0.8                     BiocVersion_3.12.0           
+##  [71] genefilter_1.72.1             desc_1.3.0                   
+##  [73] BiocParallel_1.24.1           rlang_0.4.10                 
+##  [75] pkgconfig_2.0.3               systemfonts_1.0.1            
+##  [77] bitops_1.0-6                  evaluate_0.14                
+##  [79] lattice_0.20-41               purrr_0.3.4                  
+##  [81] Rhdf5lib_1.12.1               labeling_0.4.2               
+##  [83] bit_4.0.4                     tidyselect_1.1.0             
+##  [85] magrittr_2.0.1                DESeq2_1.30.1                
+##  [87] R6_2.5.0                      generics_0.1.0               
+##  [89] DBI_1.1.1                     pillar_1.5.0                 
+##  [91] withr_2.4.1                   survival_3.2-7               
+##  [93] RCurl_1.98-1.2                tibble_3.1.0                 
+##  [95] crayon_1.4.1                  utf8_1.1.4                   
+##  [97] BiocFileCache_1.14.0          rmarkdown_2.7                
+##  [99] viridis_0.5.1                 locfit_1.5-9.4               
+## [101] grid_4.0.4                    blob_1.2.1                   
+## [103] digest_0.6.27                 xtable_1.8-4                 
+## [105] httpuv_1.5.5                  textshaping_0.3.3            
+## [107] munsell_0.5.0                 viridisLite_0.3.0            
+## [109] beeswarm_0.3.1                vipor_0.4.5                  
+## [111] bslib_0.2.4</code></pre>
 </div>
   </div>
 
@@ -317,7 +250,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

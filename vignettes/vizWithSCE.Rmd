@@ -1,5 +1,7 @@
 ---
 title: "vizWithSCE"
+author: "Kwame Forbes"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vizWithSCE}
@@ -20,9 +22,7 @@ p-value, e.g., 1 for the gene with lowest p-value, etc.
 
 # Run DESeq2 to obtain bulk DE results
 
-We load gene-summarized RNA-seq counts.
-
-Here we filter to at least 3 samples with a count of 10 or higher.
+We first load gene-summarized RNA-seq counts.
 
 ```{r eval=FALSE}
 library(airway)
@@ -32,6 +32,10 @@ For our workflow, we used the bulk dataset "airway", which contains
 four human airway smooth muscle cell lines treated with dexamethasone,
 a steroid used to treat inflammation. This pre-processed dataset is
 available on Bioconductor. 
+Here we filter to at least 3 samples with a count of 10 or higher, and
+then perform differential expression analysis.
+
+Mike: why did you change the rownames?
 
 ```{r eval=FALSE}
 library(DESeq2)
@@ -67,7 +71,7 @@ available on Bioconductor.
 dat <- integrateWithSingleCell(res, dds)
 ```
 
-```{r echo=FALSE, results="hide"}
+```{r echo=FALSE, results="hide", message=FALSE}
 # the following is evaluated but hidden,
 # because the above un-evaluated code chunk
 # involves user input.
@@ -79,20 +83,33 @@ dat <- list(res=res, dds=dds, sce=sce)
 dat$sce <- logNormCounts(dat$sce)
 ```
 
-(later we will fix this so that it can be run non-interactively)
-
 # Label cell types or clusters
+
+Mike: what is scater used here for?
+
+```{r eval=FALSE}
+library(scater)
+dat$sce <- scater::logNormCounts(dat$sce)
+sce2 <- dat$sce
+```
+
+Here we convert the rownames from Ensembl to symbol, to match with the
+cell annotation reference dataset, described below.
 
 ```{r eval=FALSE}
 library(org.Hs.eg.db)
-library(SingleR)
-library(celldex)
-library(scater)
-ref <- celldex::BlueprintEncodeData()
-dat$sce <- logNormCounts(dat$sce)
-sce2 <- dat$sce
 rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
-pred <- SingleR(test=sce2, ref=ref, labels=ref$label.main)
+```
+
+Mike: what is celldex used for here? what is SingleR used here for?
+
+Mike: after this step what has changed in `dat`?
+
+```{r eval=FALSE}
+library(celldex)
+library(SingleR)
+ref <- celldex::BlueprintEncodeData()
+pred <- SingleR::SingleR(test=sce2, ref=ref, labels=ref$label.main)
 table(pred$labels)
 colLabels(dat$sce) <- pred$labels
 ```
@@ -107,10 +124,18 @@ colLabels(dat$sce) <- labels
 
 # Use *vizWithSCE* for visualization 
 
+Mike: what does the following plot tell us about the gene with the 2nd
+smallest p-value? Which single cells is it expressed in?
+
 ```{r}
 library(vizWithSCE)
 vizWithSCE(dat, which=2)
 ```
+
+# Future direction
+
+Mike: what else would you like to do with the package? You can list
+anything you like here.
 
 # Session info
 
