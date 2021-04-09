@@ -127,7 +127,7 @@ colLabels(dat$sce) <- labels
 Mike: what does the following plot tell us about the gene with the 2nd
 smallest p-value? Which single cells is it expressed in?
 
-```{r}
+```{r viz-plot}
 library(vizWithSCE)
 vizWithSCE(dat, which=2)
 ```
