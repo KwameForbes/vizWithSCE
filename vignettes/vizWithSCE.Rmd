@@ -36,6 +36,7 @@ Here we filter to at least 3 samples with a count of 10 or higher, and
 then perform differential expression analysis.
 
 Mike: why did you change the rownames?
+To match with the format?
 
 ```{r eval=FALSE}
 library(DESeq2)
@@ -86,6 +87,7 @@ dat$sce <- logNormCounts(dat$sce)
 # Label cell types or clusters
 
 Mike: what is scater used here for?
+Used to add logNormCounts to sce?
 
 ```{r eval=FALSE}
 library(scater)
@@ -102,8 +104,10 @@ rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
 ```
 
 Mike: what is celldex used for here? what is SingleR used here for?
-
+celldex database of reference expression datasets 
+SingleR cell type recognition
 Mike: after this step what has changed in `dat`?
+dat now contains labels of different cell types
 
 ```{r eval=FALSE}
 library(celldex)
@@ -126,6 +130,8 @@ colLabels(dat$sce) <- labels
 
 Mike: what does the following plot tell us about the gene with the 2nd
 smallest p-value? Which single cells is it expressed in?
+DUSP1,known to play a role in response to environmental stress, is most 
+highly expressed in monocytes
 
 ```{r viz-plot}
 library(vizWithSCE)
@@ -136,6 +142,15 @@ vizWithSCE(dat, which=2)
 
 Mike: what else would you like to do with the package? You can list
 anything you like here.
+We are currently planning to add more features, including other types of plots,
+allowing users to further explore the intersection of the two datasets.
+We seek to add multiple gene plots, e.g. dotplots or heatmaps of sets of DE 
+genes.
+We are considering statistical tests of the distribution of expression across 
+cell types
+for sets of DE genes, e.g. up-regulated vs down-regulated DE genes.
+We will explore launching iSEE from our worklow, a well-developed package for
+interactive exploration of SCE datasets.
 
 # Session info
 
