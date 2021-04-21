@@ -35,8 +35,7 @@ available on Bioconductor.
 Here we filter to at least 3 samples with a count of 10 or higher, and
 then perform differential expression analysis.
 
-Mike: why did you change the rownames?
-To match with the format?
+Here, we changed the rownames to match the format of the sce.
 
 ```{r eval=FALSE}
 library(DESeq2)
@@ -86,8 +85,7 @@ dat$sce <- logNormCounts(dat$sce)
 
 # Label cell types or clusters
 
-Mike: what is scater used here for?
-Used to add logNormCounts to sce?
+Here, we used scater to add logNormCounts to the sce.
 
 ```{r eval=FALSE}
 library(scater)
@@ -103,11 +101,9 @@ library(org.Hs.eg.db)
 rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
 ```
 
-Mike: what is celldex used for here? what is SingleR used here for?
-celldex database of reference expression datasets 
-SingleR cell type recognition
-Mike: after this step what has changed in `dat`?
-dat now contains labels of different cell types
+Here, we used celldex which is a database of reference expression datasets 
+along with SingleR to provide cell type recognition.
+Now dat contains labels of different cell types
 
 ```{r eval=FALSE}
 library(celldex)
@@ -140,8 +136,6 @@ vizWithSCE(dat, which=2)
 
 # Future direction
 
-Mike: what else would you like to do with the package? You can list
-anything you like here.
 We are currently planning to add more features, including other types of plots,
 allowing users to further explore the intersection of the two datasets.
 We seek to add multiple gene plots, e.g. dotplots or heatmaps of sets of DE 
