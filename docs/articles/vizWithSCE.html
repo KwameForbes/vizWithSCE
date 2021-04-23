@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vizWithSCE</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.5</span>
       </span>
     </div>
 
@@ -66,7 +66,7 @@
       <h1 data-toc-skip>vizWithSCE</h1>
                         <h4 class="author">Kwame Forbes</h4>
             
-            <h4 class="date">04/09/2021</h4>
+            <h4 class="date">04/23/2021</h4>
       
       
       <div class="hidden name"><code>vizWithSCE.Rmd</code></div>
@@ -87,7 +87,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">airway</span><span class="op">)</span></code></pre></div>
 <p>For our workflow, we used the bulk dataset “airway”, which contains four human airway smooth muscle cell lines treated with dexamethasone, a steroid used to treat inflammation. This pre-processed dataset is available on Bioconductor. Here we filter to at least 3 samples with a count of 10 or higher, and then perform differential expression analysis.</p>
-<p>Mike: why did you change the rownames?</p>
+<p>Here, we changed the rownames to match the format of the sce.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mikelove/DESeq2">DESeq2</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">gse</span><span class="op">)</span>
@@ -111,17 +111,16 @@
 <div id="label-cell-types-or-clusters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#label-cell-types-or-clusters" class="anchor"></a>Label cell types or clusters</h1>
-<p>Mike: what is scater used here for?</p>
+<p>We use <em>scater</em>’s <code>logNormCounts</code> function to add normalized data to the <code>sce</code>. We create a copy of the <code>sce</code> object in order to perform cell type labeling.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span>
 <span class="va">dat</span><span class="op">$</span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">scater</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">sce</span><span class="op">)</span>
 <span class="va">sce2</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">$</span><span class="va">sce</span></code></pre></div>
-<p>Here we convert the rownames from Ensembl to symbol, to match with the cell annotation reference dataset, described below.</p>
+<p>We convert the rownames from Ensembl to gene symbols, to match with the cell annotation reference dataset, described below.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sce2</span><span class="op">)</span>, <span class="st">"SYMBOL"</span>, <span class="st">"ENSEMBL"</span><span class="op">)</span></code></pre></div>
-<p>Mike: what is celldex used for here? what is SingleR used here for?</p>
-<p>Mike: after this step what has changed in <code>dat</code>?</p>
+<p>We use <em>celldex</em> which is a database of reference expression datasets along with <em>SingleR</em> to provide cell type recognition. Now <code>dat</code> contains labels of different cell types.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/celldex">celldex</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LTLA/SingleR">SingleR</a></span><span class="op">)</span>
@@ -133,7 +132,7 @@
 <div id="use-vizwithsce-for-visualization" class="section level1">
 <h1 class="hasAnchor">
 <a href="#use-vizwithsce-for-visualization" class="anchor"></a>Use <em>vizWithSCE</em> for visualization</h1>
-<p>Mike: what does the following plot tell us about the gene with the 2nd smallest p-value? Which single cells is it expressed in?</p>
+<p>We use <code>vizWithSCE</code> to pick the second gene by smallest p-value, and make a violin plot over the cell labels from SingleR. <em>DUSP1</em> is known to play a role in response to environmental stress, and is most highly expressed in monocytes according to the single cell data.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vizWithSCE</span><span class="op">)</span>
 <span class="fu"><a href="../reference/vizWithSCE.html">vizWithSCE</a></span><span class="op">(</span><span class="va">dat</span>, which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -142,7 +141,11 @@
 <div id="future-direction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#future-direction" class="anchor"></a>Future direction</h1>
-<p>Mike: what else would you like to do with the package? You can list anything you like here.</p>
+<ul>
+<li>We are currently planning to add more features, including other types of plots, allowing users to further explore the intersection of the two datasets. We seek to add multiple gene plots, e.g. dotplots or heatmaps of sets of DE genes.</li>
+<li>We are considering statistical tests of the distribution of expression across cell types for sets of DE genes, e.g. up-regulated vs down-regulated DE genes.</li>
+<li>We will explore launching iSEE from our worklow, a well-developed package for interactive exploration of SCE datasets.</li>
+</ul>
 </div>
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
@@ -173,7 +176,7 @@
 ## [11] GenomicRanges_1.42.0        GenomeInfoDb_1.26.2        
 ## [13] IRanges_2.24.1              S4Vectors_0.28.1           
 ## [15] BiocGenerics_0.36.0         MatrixGenerics_1.2.1       
-## [17] matrixStats_0.58.0          vizWithSCE_0.0.4           
+## [17] matrixStats_0.58.0          vizWithSCE_0.0.5           
 ## 
 ## loaded via a namespace (and not attached):
 ##   [1] ggbeeswarm_0.6.0              colorspace_2.0-0             
@@ -186,7 +189,7 @@
 ##  [15] sparseMatrixStats_1.2.1       cachem_1.0.4                 
 ##  [17] geneplotter_1.68.0            knitr_1.31                   
 ##  [19] polyclip_1.10-0               jsonlite_1.7.2               
-##  [21] annotate_1.68.0               dbplyr_2.1.0                 
+##  [21] annotate_1.68.0               dbplyr_2.1.1                 
 ##  [23] ggforce_0.3.3                 shiny_1.6.0                  
 ##  [25] BiocManager_1.30.10           compiler_4.0.4               
 ##  [27] httr_1.4.2                    assertthat_0.2.1             
@@ -220,7 +223,7 @@
 ##  [83] bit_4.0.4                     tidyselect_1.1.0             
 ##  [85] magrittr_2.0.1                DESeq2_1.30.1                
 ##  [87] R6_2.5.0                      generics_0.1.0               
-##  [89] DBI_1.1.1                     pillar_1.5.0                 
+##  [89] DBI_1.1.1                     pillar_1.6.0                 
 ##  [91] withr_2.4.1                   survival_3.2-7               
 ##  [93] RCurl_1.98-1.2                tibble_3.1.0                 
 ##  [95] crayon_1.4.1                  utf8_1.1.4                   
