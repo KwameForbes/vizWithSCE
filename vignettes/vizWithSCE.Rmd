@@ -85,7 +85,9 @@ dat$sce <- logNormCounts(dat$sce)
 
 # Label cell types or clusters
 
-Here, we used scater to add logNormCounts to the sce.
+We use *scater*'s `logNormCounts` function to add normalized data to
+the `sce`. We create a copy of the `sce` object in order to perform
+cell type labeling.
 
 ```{r eval=FALSE}
 library(scater)
@@ -93,17 +95,17 @@ dat$sce <- scater::logNormCounts(dat$sce)
 sce2 <- dat$sce
 ```
 
-Here we convert the rownames from Ensembl to symbol, to match with the
-cell annotation reference dataset, described below.
+We convert the rownames from Ensembl to gene symbols, to match with
+the cell annotation reference dataset, described below.
 
 ```{r eval=FALSE}
 library(org.Hs.eg.db)
 rownames(sce2) <- mapIds(org.Hs.eg.db, rownames(sce2), "SYMBOL", "ENSEMBL")
 ```
 
-Here, we used celldex which is a database of reference expression datasets 
-along with SingleR to provide cell type recognition.
-Now dat contains labels of different cell types
+We use *celldex* which is a database of reference expression datasets 
+along with *SingleR* to provide cell type recognition. Now `dat`
+contains labels of different cell types. 
 
 ```{r eval=FALSE}
 library(celldex)
@@ -124,10 +126,11 @@ colLabels(dat$sce) <- labels
 
 # Use *vizWithSCE* for visualization 
 
-Mike: what does the following plot tell us about the gene with the 2nd
-smallest p-value? Which single cells is it expressed in?
-DUSP1,known to play a role in response to environmental stress, is most 
-highly expressed in monocytes
+We use `vizWithSCE` to pick the second gene by smallest p-value, and
+make a violin plot over the cell labels from SingleR.
+*DUSP1* is known to play a role in response to environmental stress, 
+and is most highly expressed in monocytes according to the single cell
+data. 
 
 ```{r viz-plot}
 library(vizWithSCE)
@@ -136,14 +139,14 @@ vizWithSCE(dat, which=2)
 
 # Future direction
 
-We are currently planning to add more features, including other types of plots,
+* We are currently planning to add more features, including other types of plots,
 allowing users to further explore the intersection of the two datasets.
 We seek to add multiple gene plots, e.g. dotplots or heatmaps of sets of DE 
 genes.
-We are considering statistical tests of the distribution of expression across 
+* We are considering statistical tests of the distribution of expression across 
 cell types
 for sets of DE genes, e.g. up-regulated vs down-regulated DE genes.
-We will explore launching iSEE from our worklow, a well-developed package for
+* We will explore launching iSEE from our worklow, a well-developed package for
 interactive exploration of SCE datasets.
 
 # Session info
