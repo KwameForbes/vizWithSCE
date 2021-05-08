@@ -1,5 +1,6 @@
 Package: vizWithSCE
-Title: Visualization of Bulk Differential Analysis Results for DESeq2 with Single-Cell Datasets Integation 
+Title: Visualization of Bulk Differential Analysis Results for DESeq2
+    with Single-Cell Datasets
 Version: 0.0.5
 Authors@R: c(
     person(given = "Kwame",
@@ -11,8 +12,11 @@ Authors@R: c(
            family = "Love",
            role = "aut",
            email = "michaelisaiahlove@gmail.com",
-           comment = c(ORCID = "0000-0001-8401-0545")))         
-Description: This package allows visualization, usually in the form of violin plots, of Bulk Differential Analysis Results for DESeq2 with Single-Cell Datasets Integation.
+           comment = c(ORCID = "0000-0001-8401-0545")),
+    person("CZI", role="fnd"))
+Description: This package allows visualization, usually in the
+    form of violin plots, of bulk differential analysis results
+    for DESeq2 integrated with single-cell datasets.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
